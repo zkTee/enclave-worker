@@ -1,2 +1,3 @@
 # enclave-worker
-enclave-worker based on enclave
+
+A exprimental project to explore Intel SGX.
