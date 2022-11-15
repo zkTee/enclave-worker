@@ -1,0 +1,9 @@
+/enclave-worker/target
+/enclave/target
+
+Cargo.lock
+
+bin
+lib
+*.so
+*.o

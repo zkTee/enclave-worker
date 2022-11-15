@@ -1,0 +1,14 @@
+[package]
+name = "enclave-worker"
+version = "1.0.0"
+authors = ["zTgx <747674262@qq.com>"]
+build = "build.rs"
+
+[dependencies]
+sgx_types = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+sgx_urts = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+
+[patch.'https://github.com/apache/teaclave-sgx-sdk.git']
+sgx_urts = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
+sgx_types = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
+
