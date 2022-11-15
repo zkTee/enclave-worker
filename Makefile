@@ -65,18 +65,18 @@ CUSTOM_COMMON_PATH := $(TOP_DIR)/common
 
 ######## EDL Settings ########
 
-Enclave_EDL_Files := enclave/Enclave_t.c enclave/Enclave_t.h app/Enclave_u.c app/Enclave_u.h
+Enclave_EDL_Files := enclave/Enclave_t.c enclave/Enclave_t.h enclave-worker/Enclave_u.c enclave-worker/Enclave_u.h
 
 ######## APP Settings ########
 
 App_Rust_Flags := --release
-App_SRC_Files := $(shell find app/ -type f -name '*.rs') $(shell find app/ -type f -name 'Cargo.toml')
-App_Include_Paths := -I ./app -I./include -I$(SGX_SDK)/include -I$(CUSTOM_EDL_PATH)
+App_SRC_Files := $(shell find enclave-worker/ -type f -name '*.rs') $(shell find enclave-worker/ -type f -name 'Cargo.toml')
+App_Include_Paths := -I ./enclave-worker -I./include -I$(SGX_SDK)/include -I$(CUSTOM_EDL_PATH)
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fPIC -Wno-attributes $(App_Include_Paths)
 
-App_Rust_Path := ./app/target/release
+App_Rust_Path := ./enclave-worker/target/release
 App_Enclave_u_Object :=lib/libEnclave_u.a
-App_Name := bin/app
+App_Name := bin/enclave-worker
 
 ######## Enclave Settings ########
 
@@ -113,23 +113,23 @@ all: $(App_Name) $(Signed_RustEnclave_Name)
 
 $(Enclave_EDL_Files): $(SGX_EDGER8R) enclave/Enclave.edl
 	$(SGX_EDGER8R) --trusted enclave/Enclave.edl --search-path $(SGX_SDK)/include --search-path $(CUSTOM_EDL_PATH) --trusted-dir enclave
-	$(SGX_EDGER8R) --untrusted enclave/Enclave.edl --search-path $(SGX_SDK)/include --search-path $(CUSTOM_EDL_PATH) --untrusted-dir app
+	$(SGX_EDGER8R) --untrusted enclave/Enclave.edl --search-path $(SGX_SDK)/include --search-path $(CUSTOM_EDL_PATH) --untrusted-dir enclave-worker
 	@echo "GEN  =>  $(Enclave_EDL_Files)"
 
 ######## App Objects ########
 
-app/Enclave_u.o: $(Enclave_EDL_Files)
-	@$(CC) $(App_C_Flags) -c app/Enclave_u.c -o $@
+enclave-worker/Enclave_u.o: $(Enclave_EDL_Files)
+	@$(CC) $(App_C_Flags) -c enclave-worker/Enclave_u.c -o $@
 	@echo "CC   <=  $<"
 
-$(App_Enclave_u_Object): app/Enclave_u.o
+$(App_Enclave_u_Object): enclave-worker/Enclave_u.o
 	$(AR) rcsD $@ $^
 
 $(App_Name): $(App_Enclave_u_Object) $(App_SRC_Files)
-	@cd app && SGX_SDK=$(SGX_SDK) cargo build $(App_Rust_Flags)
+	@cd enclave-worker && SGX_SDK=$(SGX_SDK) cargo build $(App_Rust_Flags)
 	@echo "Cargo  =>  $@"
 	mkdir -p bin
-	cp $(App_Rust_Path)/app ./bin
+	cp $(App_Rust_Path)/enclave-worker ./bin
 
 ######## Enclave Objects ########
 
@@ -153,6 +153,6 @@ enclave:
 
 .PHONY: clean
 clean:
-	@rm -f $(App_Name) $(RustEnclave_Name) $(Signed_RustEnclave_Name) enclave/*_t.* app/*_u.* lib/*.a
+	@rm -f $(App_Name) $(RustEnclave_Name) $(Signed_RustEnclave_Name) enclave/*_t.* enclave-worker/*_u.* lib/*.a
 	@cd enclave && cargo clean && rm -f Cargo.lock
-	@cd app && cargo clean && rm -f Cargo.lock
+	@cd enclave-worker && cargo clean && rm -f Cargo.lock
