@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = ["The Teaclave Authors"]
 
 [lib]
-name = "helloworldsampleenclave"
+name = "helloworldsampleenclave" 
 crate-type = ["staticlib"]
 
 [features]
@@ -15,6 +15,7 @@ sgx_types = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_tstd = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_tseal = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_rand = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+sgx_tunittest = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 
 [dependencies]
 serde = { git = "https://github.com/mesalock-linux/serde-sgx" }
@@ -46,7 +47,7 @@ sgx_rand = { version = "1.1.6", git = "https://github.com/apache/incubator-teacl
 # sgx_tse = { path = "../../../sgx_tse" }
 sgx_tseal = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
 sgx_tstd = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
-# sgx_tunittest = { path = "../../../sgx_tunittest" }
+sgx_tunittest = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
 sgx_types = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
 #sgx_ucrypto = { path = "../../../sgx_ucrypto" }
 # sgx_unwind = { path = "../../../sgx_unwind" }

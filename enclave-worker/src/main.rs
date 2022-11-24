@@ -22,9 +22,21 @@ use sgx_urts::SgxEnclave;
 
 static ENCLAVE_FILE: &'static str = "enclave.signed.so";
 
-extern {
-    fn seal(eid: sgx_enclave_id_t, retval: *mut sgx_status_t,
-        blob: *mut u8, len: u32) -> sgx_status_t;
+extern "C" {
+    fn seal(
+        eid: sgx_enclave_id_t,
+        retval: *mut sgx_status_t,
+        blob: *mut u8,
+        len: u32,
+    ) -> sgx_status_t;
+    fn unseal(
+        eid: sgx_enclave_id_t,
+        retval: *mut sgx_status_t,
+        blob: *mut u8,
+        len: u32,
+    ) -> sgx_status_t;
+
+    fn test_main_entrance(eid: sgx_enclave_id_t, retval: *mut size_t) -> sgx_status_t;
 }
 
 fn init_enclave() -> SgxResult<SgxEnclave> {
@@ -33,12 +45,17 @@ fn init_enclave() -> SgxResult<SgxEnclave> {
     // call sgx_create_enclave to initialize an enclave instance
     // Debug Support: set 2nd parameter to 1
     let debug = 1;
-    let mut misc_attr = sgx_misc_attribute_t {secs_attr: sgx_attributes_t { flags:0, xfrm:0}, misc_select:0};
-    SgxEnclave::create(ENCLAVE_FILE,
-                       debug,
-                       &mut launch_token,
-                       &mut launch_token_updated,
-                       &mut misc_attr)
+    let mut misc_attr = sgx_misc_attribute_t {
+        secs_attr: sgx_attributes_t { flags: 0, xfrm: 0 },
+        misc_select: 0,
+    };
+    SgxEnclave::create(
+        ENCLAVE_FILE,
+        debug,
+        &mut launch_token,
+        &mut launch_token_updated,
+        &mut misc_attr,
+    )
 }
 
 fn main() {
@@ -46,11 +63,11 @@ fn main() {
         Ok(r) => {
             println!("[+] Init Enclave Successful {}!", r.geteid());
             r
-        },
+        }
         Err(x) => {
             println!("[-] Init Enclave Failed {}!", x.as_str());
             return;
-        },
+        }
     };
 
     let input_string = String::from("I am confidential.");
@@ -58,17 +75,54 @@ fn main() {
 
     let len = input_string.len() as u32;
     let result = unsafe {
-        seal(enclave.geteid(), &mut retval, input_string.as_ptr() as *mut u8, len)
-    }; 
+        seal(
+            enclave.geteid(),
+            &mut retval,
+            input_string.as_ptr() as *mut u8,
+            len,
+        )
+    };
 
     match result {
-        sgx_status_t::SGX_SUCCESS => {},
+        sgx_status_t::SGX_SUCCESS => {}
         _ => {
             println!("[-] ECALL Enclave Failed {}!", result.as_str());
             return;
         }
     }
     println!("[+] seal success...");
+
+    // println!("[+] unseal processing...");
+    // let sealed_blob = input_string.as_ptr() as sgx_sealed_data_t;
+    // let aad: [u8; 0] = [0_u8; 0];
+    // let sealed_data = SgxSealedData::<String>::seal_data(&aad, &data).unwrap();
+
+    // let result = unsafe {
+    //     unseal(enclave.geteid(), &mut retval, sealed_blob, len)
+    // };
+    // match result {
+    //     sgx_status_t::SGX_SUCCESS => {},
+    //     _ => {
+    //         println!("[-] ECALL Enclave Failed {}!", result.as_str());
+    //         return;
+    //     }
+    // }
+    // println!("[+] unseal success...");
+
+    let mut retval = 0usize;
+
+    let result = unsafe { test_main_entrance(enclave.geteid(), &mut retval) };
+
+    match result {
+        sgx_status_t::SGX_SUCCESS => {}
+        _ => {
+            println!("[-] ECALL Enclave Failed {}!", result.as_str());
+            return;
+        }
+    }
+    assert_eq!(retval, 0);
+
+    println!("[+] unit_test ended!");
 
     enclave.destroy();
 }

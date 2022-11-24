@@ -13,6 +13,16 @@ typedef struct ms_seal_t {
 	uint32_t ms_len;
 } ms_seal_t;
 
+typedef struct ms_unseal_t {
+	sgx_status_t ms_retval;
+	uint8_t* ms_blob;
+	uint32_t ms_len;
+} ms_unseal_t;
+
+typedef struct ms_test_main_entrance_t {
+	size_t ms_retval;
+} ms_test_main_entrance_t;
+
 typedef struct ms_t_global_init_ecall_t {
 	uint64_t ms_id;
 	const uint8_t* ms_path;
@@ -1083,6 +1093,26 @@ sgx_status_t seal(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* blob, uin
 	return status;
 }
 
+sgx_status_t unseal(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* blob, uint32_t len)
+{
+	sgx_status_t status;
+	ms_unseal_t ms;
+	ms.ms_blob = blob;
+	ms.ms_len = len;
+	status = sgx_ecall(eid, 2, &ocall_table_Enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
+	return status;
+}
+
+sgx_status_t test_main_entrance(sgx_enclave_id_t eid, size_t* retval)
+{
+	sgx_status_t status;
+	ms_test_main_entrance_t ms;
+	status = sgx_ecall(eid, 3, &ocall_table_Enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
+	return status;
+}
+
 sgx_status_t t_global_init_ecall(sgx_enclave_id_t eid, uint64_t id, const uint8_t* path, size_t len)
 {
 	sgx_status_t status;
@@ -1090,14 +1120,14 @@ sgx_status_t t_global_init_ecall(sgx_enclave_id_t eid, uint64_t id, const uint8_
 	ms.ms_id = id;
 	ms.ms_path = path;
 	ms.ms_len = len;
-	status = sgx_ecall(eid, 2, &ocall_table_Enclave, &ms);
+	status = sgx_ecall(eid, 4, &ocall_table_Enclave, &ms);
 	return status;
 }
 
 sgx_status_t t_global_exit_ecall(sgx_enclave_id_t eid)
 {
 	sgx_status_t status;
-	status = sgx_ecall(eid, 3, &ocall_table_Enclave, NULL);
+	status = sgx_ecall(eid, 5, &ocall_table_Enclave, NULL);
 	return status;
 }
 

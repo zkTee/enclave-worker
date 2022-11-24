@@ -280,6 +280,8 @@ int SGX_UBRIDGE(SGX_CDECL, sgx_thread_set_multiple_untrusted_events_ocall, (cons
 
 sgx_status_t say_something(sgx_enclave_id_t eid, sgx_status_t* retval, const uint8_t* some_string, size_t len);
 sgx_status_t seal(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* blob, uint32_t len);
+sgx_status_t unseal(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* blob, uint32_t len);
+sgx_status_t test_main_entrance(sgx_enclave_id_t eid, size_t* retval);
 sgx_status_t t_global_init_ecall(sgx_enclave_id_t eid, uint64_t id, const uint8_t* path, size_t len);
 sgx_status_t t_global_exit_ecall(sgx_enclave_id_t eid);
 

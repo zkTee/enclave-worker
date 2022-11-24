@@ -30,5 +30,8 @@ enclave {
         // public sgx_status_t seal([out, size=len] const uint8_t* blob, size_t len);
 
         public sgx_status_t seal([out, size=len] uint8_t* blob, uint32_t len);
+        public sgx_status_t unseal([out, size=len] uint8_t* blob, uint32_t len);
+
+        public size_t test_main_entrance();
     };
 };

@@ -2,5 +2,5 @@
 
 Intel SGX frontier.
 
-- [ ] seal-unseal
+- [x] seal-unseal
 - [ ] enclave upgrade

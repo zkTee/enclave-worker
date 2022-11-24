@@ -22,6 +22,8 @@ extern "C" {
 
 sgx_status_t say_something(const uint8_t* some_string, size_t len);
 sgx_status_t seal(uint8_t* blob, uint32_t len);
+sgx_status_t unseal(uint8_t* blob, uint32_t len);
+size_t test_main_entrance(void);
 void t_global_init_ecall(uint64_t id, const uint8_t* path, size_t len);
 void t_global_exit_ecall(void);
 
