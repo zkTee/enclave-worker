@@ -1,3 +1,6 @@
 # enclave-worker
 
-A exprimental project to explore Intel SGX.
+Intel SGX frontier.
+
+- [ ] seal-unseal
+- [ ] enclave upgrade
