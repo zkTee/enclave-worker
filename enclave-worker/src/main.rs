@@ -23,8 +23,8 @@ use sgx_urts::SgxEnclave;
 static ENCLAVE_FILE: &'static str = "enclave.signed.so";
 
 extern {
-    fn say_something(eid: sgx_enclave_id_t, retval: *mut sgx_status_t,
-                     some_string: *const u8, len: usize) -> sgx_status_t;
+    fn seal(eid: sgx_enclave_id_t, retval: *mut sgx_status_t,
+        blob: *mut u8, len: u32) -> sgx_status_t;
 }
 
 fn init_enclave() -> SgxResult<SgxEnclave> {
@@ -53,15 +53,14 @@ fn main() {
         },
     };
 
-    let input_string = String::from("This is a normal world string passed into Enclave!\n");
+    let input_string = String::from("I am confidential.");
     let mut retval = sgx_status_t::SGX_SUCCESS;
 
+    let len = input_string.len() as u32;
     let result = unsafe {
-        say_something(enclave.geteid(),
-                      &mut retval,
-                      input_string.as_ptr() as * const u8,
-                      input_string.len())
-    };
+        seal(enclave.geteid(), &mut retval, input_string.as_ptr() as *mut u8, len)
+    }; 
+
     match result {
         sgx_status_t::SGX_SUCCESS => {},
         _ => {
@@ -69,6 +68,7 @@ fn main() {
             return;
         }
     }
-    println!("[+] say_something success...");
+    println!("[+] seal success...");
+
     enclave.destroy();
 }

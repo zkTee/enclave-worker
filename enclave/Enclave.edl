@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-enclave {
+enclave { 
     from "sgx_tstd.edl" import *;
     from "sgx_stdio.edl" import *;
     from "sgx_backtrace.edl" import *;
@@ -24,5 +24,11 @@ enclave {
         /* define ECALLs here. */
 
         public sgx_status_t say_something([in, size=len] const uint8_t* some_string, size_t len);
+        
+        // seal data
+        // error: `seal': `blob' is readonly - cannot be used with `out'
+        // public sgx_status_t seal([out, size=len] const uint8_t* blob, size_t len);
+
+        public sgx_status_t seal([out, size=len] uint8_t* blob, uint32_t len);
     };
 };

@@ -13,6 +13,13 @@ default = []
 [target.'cfg(not(target_env = "sgx"))'.dependencies]
 sgx_types = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_tstd = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+sgx_tseal = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+sgx_rand = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+
+[dependencies]
+serde = { git = "https://github.com/mesalock-linux/serde-sgx" }
+serde_derive = { git = "https://github.com/mesalock-linux/serde-sgx" }
+serde_cbor = { git = "https://github.com/mesalock-linux/cbor-sgx" }
 
 [patch.'https://github.com/apache/teaclave-sgx-sdk.git']
 # sgx_align_struct_attribute = { path = "../../../sgx_align_struct_attribute" }
@@ -25,8 +32,8 @@ sgx_tstd = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 # sgx_demangle = { path = "../../../sgx_demangle" }
 # sgx_libc = { path = "../../../sgx_libc" }
 # sgx_no_tstd = { path = "../../../sgx_no_tstd" }
-# sgx_rand = { path = "../../../sgx_rand" }
-# sgx_rand_derive = { path = "../../../sgx_rand_derive" }
+sgx_rand = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
+# sgx_rand_derive = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
 # sgx_serialize = { path = "../../../sgx_serialize" }
 # sgx_serialize_derive = { path = "../../../sgx_serialize_derive" }
 # sgx_serialize_derive_internals = { path = "../../../sgx_serialize_derive_internals" }
@@ -37,7 +44,7 @@ sgx_tstd = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 # sgx_tprotected_fs = { path = "../../../sgx_tprotected_fs" }
 # sgx_trts = { path = "../../../sgx_trts" }
 # sgx_tse = { path = "../../../sgx_tse" }
-# sgx_tseal = { path = "../../../sgx_tseal" }
+sgx_tseal = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
 sgx_tstd = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
 # sgx_tunittest = { path = "../../../sgx_tunittest" }
 sgx_types = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
