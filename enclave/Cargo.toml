@@ -1,10 +1,10 @@
 [package]
-name = "Helloworldsampleenclave"
+name = "Enclave"
 version = "1.0.0"
 authors = ["The Teaclave Authors"]
 
 [lib]
-name = "helloworldsampleenclave" 
+name = "enclave" 
 crate-type = ["staticlib"]
 
 [features]
