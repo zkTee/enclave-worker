@@ -92,22 +92,19 @@ fn main() {
     }
     println!("[+] seal success...");
 
-    // println!("[+] unseal processing...");
-    // let sealed_blob = input_string.as_ptr() as sgx_sealed_data_t;
-    // let aad: [u8; 0] = [0_u8; 0];
-    // let sealed_data = SgxSealedData::<String>::seal_data(&aad, &data).unwrap();
+    println!("[+] unseal processing...");
 
-    // let result = unsafe {
-    //     unseal(enclave.geteid(), &mut retval, sealed_blob, len)
-    // };
-    // match result {
-    //     sgx_status_t::SGX_SUCCESS => {},
-    //     _ => {
-    //         println!("[-] ECALL Enclave Failed {}!", result.as_str());
-    //         return;
-    //     }
-    // }
-    // println!("[+] unseal success...");
+    let result = unsafe {
+        unseal(enclave.geteid(), &mut retval, input_string.as_ptr() as *mut u8, len)
+    };
+    match result {
+        sgx_status_t::SGX_SUCCESS => {},
+        _ => {
+            println!("[-] ECALL Enclave Failed {}!", result.as_str());
+            return;
+        }
+    }
+    println!("[+] unseal success...");
 
     let mut retval = 0usize;
 

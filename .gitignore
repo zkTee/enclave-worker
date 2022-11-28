@@ -1,4 +1,4 @@
-/enclave-worker/target
+/app/target
 /enclave/target
 
 Cargo.lock
