@@ -36,3 +36,29 @@ fn main() {
 
     handler.join().unwrap();
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use sgx_types::*;
+
+    #[test]
+    fn test() {
+        let enclave = init::init_enclave().unwrap();
+
+        let mut retval = 0usize;
+
+        let result = unsafe { ecall_api::test_main_entrance(enclave.geteid(), &mut retval) };
+    
+        match result {
+            sgx_status_t::SGX_SUCCESS => {}
+            _ => {
+                println!("[-] ECALL Enclave Failed {}!", result.as_str());
+                return;
+            }
+        }
+        assert_eq!(retval, 0);
+    
+        println!("[+] unit_test ended!");
+    }
+}

@@ -174,6 +174,9 @@ $(Signed_RustEnclave_Name): $(RustEnclave_Name)
 enclave:
 	$(MAKE) -C ./enclave/
 
+.PHONY: test
+test:
+	cd app && cargo test --all && cd ..
 
 .PHONY: clean
 clean:

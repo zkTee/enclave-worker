@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use sgx_types::*;
 
 extern "C" {
@@ -14,4 +16,6 @@ extern "C" {
         blob: *mut u8,
         len: u32,
     ) -> sgx_status_t;
+
+    pub fn test_main_entrance(eid: sgx_enclave_id_t, retval: *mut size_t) -> sgx_status_t;
 }
