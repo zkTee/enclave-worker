@@ -20,24 +20,11 @@ extern crate sgx_urts;
 use sgx_types::*;
 use sgx_urts::SgxEnclave;
 
+pub mod ecall_api;
+use ecall_api::*;
+
 static ENCLAVE_FILE: &'static str = "enclave.signed.so";
 
-extern "C" {
-    fn seal(
-        eid: sgx_enclave_id_t,
-        retval: *mut sgx_status_t,
-        blob: *mut u8,
-        len: u32,
-    ) -> sgx_status_t;
-    fn unseal(
-        eid: sgx_enclave_id_t,
-        retval: *mut sgx_status_t,
-        blob: *mut u8,
-        len: u32,
-    ) -> sgx_status_t;
-
-    fn test_main_entrance(eid: sgx_enclave_id_t, retval: *mut size_t) -> sgx_status_t;
-}
 
 fn init_enclave() -> SgxResult<SgxEnclave> {
     let mut launch_token: sgx_launch_token_t = [0; 1024];
