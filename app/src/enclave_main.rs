@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use sgx_types::*;
 use init;
 use seal;

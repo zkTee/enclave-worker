@@ -18,6 +18,8 @@
 extern crate dirs;
 extern crate sgx_types;
 extern crate sgx_urts;
+extern crate log;
+#[macro_use] extern crate lazy_static;
 
 mod ecall_api;
 mod ocall_api;
@@ -25,6 +27,8 @@ mod init;
 mod seal;
 mod enclave_main;
 mod say;
+mod ocall_impl;
+mod db;
 
 use std::thread;
 

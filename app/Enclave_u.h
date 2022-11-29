@@ -21,6 +21,14 @@
 extern "C" {
 #endif
 
+#ifndef SAVE_TO_DB_DEFINED__
+#define SAVE_TO_DB_DEFINED__
+sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, save_to_db, (uint8_t* key_pointer, uint32_t key_size, uint32_t sealed_log_size, uint8_t* scratch_pad_pointer));
+#endif
+#ifndef GET_FROM_DB_DEFINED__
+#define GET_FROM_DB_DEFINED__
+sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, get_from_db, (uint8_t* key_pointer, uint32_t key_size, uint8_t* value_pointer, uint32_t value_size));
+#endif
 #ifndef U_THREAD_SET_EVENT_OCALL_DEFINED__
 #define U_THREAD_SET_EVENT_OCALL_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, u_thread_set_event_ocall, (int* error, const void* tcs));

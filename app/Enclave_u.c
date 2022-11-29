@@ -29,6 +29,22 @@ typedef struct ms_t_global_init_ecall_t {
 	size_t ms_len;
 } ms_t_global_init_ecall_t;
 
+typedef struct ms_save_to_db_t {
+	sgx_status_t ms_retval;
+	uint8_t* ms_key_pointer;
+	uint32_t ms_key_size;
+	uint32_t ms_sealed_log_size;
+	uint8_t* ms_scratch_pad_pointer;
+} ms_save_to_db_t;
+
+typedef struct ms_get_from_db_t {
+	sgx_status_t ms_retval;
+	uint8_t* ms_key_pointer;
+	uint32_t ms_key_size;
+	uint8_t* ms_value_pointer;
+	uint32_t ms_value_size;
+} ms_get_from_db_t;
+
 typedef struct ms_u_thread_set_event_ocall_t {
 	int ms_retval;
 	int* ms_error;
@@ -486,6 +502,22 @@ typedef struct ms_sgx_thread_set_multiple_untrusted_events_ocall_t {
 	const void** ms_waiters;
 	size_t ms_total;
 } ms_sgx_thread_set_multiple_untrusted_events_ocall_t;
+
+static sgx_status_t SGX_CDECL Enclave_save_to_db(void* pms)
+{
+	ms_save_to_db_t* ms = SGX_CAST(ms_save_to_db_t*, pms);
+	ms->ms_retval = save_to_db(ms->ms_key_pointer, ms->ms_key_size, ms->ms_sealed_log_size, ms->ms_scratch_pad_pointer);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_get_from_db(void* pms)
+{
+	ms_get_from_db_t* ms = SGX_CAST(ms_get_from_db_t*, pms);
+	ms->ms_retval = get_from_db(ms->ms_key_pointer, ms->ms_key_size, ms->ms_value_pointer, ms->ms_value_size);
+
+	return SGX_SUCCESS;
+}
 
 static sgx_status_t SGX_CDECL Enclave_u_thread_set_event_ocall(void* pms)
 {
@@ -1001,10 +1033,12 @@ static sgx_status_t SGX_CDECL Enclave_sgx_thread_set_multiple_untrusted_events_o
 
 static const struct {
 	size_t nr_ocall;
-	void * table[64];
+	void * table[66];
 } ocall_table_Enclave = {
-	64,
+	66,
 	{
+		(void*)Enclave_save_to_db,
+		(void*)Enclave_get_from_db,
 		(void*)Enclave_u_thread_set_event_ocall,
 		(void*)Enclave_u_thread_wait_event_ocall,
 		(void*)Enclave_u_thread_set_multiple_events_ocall,

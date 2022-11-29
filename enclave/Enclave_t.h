@@ -27,6 +27,8 @@ size_t test_main_entrance(void);
 void t_global_init_ecall(uint64_t id, const uint8_t* path, size_t len);
 void t_global_exit_ecall(void);
 
+sgx_status_t SGX_CDECL save_to_db(sgx_status_t* retval, uint8_t* key_pointer, uint32_t key_size, uint32_t sealed_log_size, uint8_t* scratch_pad_pointer);
+sgx_status_t SGX_CDECL get_from_db(sgx_status_t* retval, uint8_t* key_pointer, uint32_t key_size, uint8_t* value_pointer, uint32_t value_size);
 sgx_status_t SGX_CDECL u_thread_set_event_ocall(int* retval, int* error, const void* tcs);
 sgx_status_t SGX_CDECL u_thread_wait_event_ocall(int* retval, int* error, const void* tcs, const struct timespec* timeout);
 sgx_status_t SGX_CDECL u_thread_set_multiple_events_ocall(int* retval, int* error, const void** tcss, int total);

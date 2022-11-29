@@ -25,18 +25,16 @@ extern crate sgx_types;
 extern crate sgx_tseal;
 
 #[cfg(not(target_env = "sgx"))]
-#[macro_use]
-extern crate sgx_tstd as std;
+#[macro_use] extern crate sgx_tstd as std;
 extern crate sgx_rand;
 
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_cbor;
+extern crate log;
+#[macro_use] extern crate serde_derive;
 extern crate sgx_tunittest;
 
 use sgx_types::*;
 use std::string::String;
-use std::vec::Vec;
+use std::vec::{Vec};
 use std::io::{self, Write};
 use std::slice;
 use sgx_tseal::{SgxSealedData};
@@ -48,6 +46,26 @@ use sgx_types::marker::ContiguousMemory;
 
 mod test_seal;
 use test_seal::*;
+
+mod save;
+mod ocall_api;
+
+use log::*;
+
+pub type Bytes = Vec<u8>;
+pub const MEGA_BYTE: usize = 1_000_000;
+pub const SCRATCH_PAD_SIZE: usize = MEGA_BYTE * 1;
+pub const U32_NUM_BYTES: usize = 4;
+
+#[derive(Serialize, Deserialize, Clone, Default, Debug)]
+pub struct Item {
+    name: String,
+}
+impl Item {
+    pub fn new(name: String) -> Self {
+        Item { name }
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn say_something(some_string: *const u8, some_len: usize) -> sgx_status_t {
@@ -75,7 +93,16 @@ pub extern "C" fn say_something(some_string: *const u8, some_len: usize) -> sgx_
                                                .as_str();
 
     // Ocall to normal world for output
-    println!("{}", &hello_string);
+    info!("{}", &hello_string);
+
+    // save to db
+    let mut scratch_pad: Vec<u8> = vec![0; SCRATCH_PAD_SIZE];
+    let scratch_pad_pointer: *mut u8 = &mut scratch_pad[0];
+
+    let key: Vec<u8> = vec![6, 6, 6];
+    save::save(key.clone(), hello_string, scratch_pad_pointer).and_then(
+        |_| save::fetch(key.clone(), &mut scratch_pad)
+    ).unwrap();
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -103,8 +130,8 @@ pub extern "C" fn seal(blob: *mut u8, len: u32) -> sgx_status_t {
 
     let encoded_vec = serde_cbor::to_vec(&data).unwrap();
     let encoded_slice = encoded_vec.as_slice();
-    println!("Length of encoded slice: {}", encoded_slice.len());
-    println!("Encoded slice: {:?}", encoded_slice);
+    info!("Length of encoded slice: {}", encoded_slice.len());
+    info!("Encoded slice: {:?}", encoded_slice);
 
     let aad: [u8; 0] = [0_u8; 0];
     let result = SgxSealedData::<[u8]>::seal_data(&aad, encoded_slice);
@@ -118,7 +145,7 @@ pub extern "C" fn seal(blob: *mut u8, len: u32) -> sgx_status_t {
         return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
     }
 
-    println!("{:?}", data);
+    info!("{:?}", data);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -143,11 +170,11 @@ pub extern "C" fn unseal(sealed_log: * mut u8, sealed_log_size: u32) -> sgx_stat
     };
 
     let encoded_slice = unsealed_data.get_decrypt_txt();
-    println!("Length of encoded slice: {}", encoded_slice.len());
-    println!("Encoded slice: {:?}", encoded_slice);
+    info!("Length of encoded slice: {}", encoded_slice.len());
+    info!("Encoded slice: {:?}", encoded_slice);
     let data: RandDataSerializable = serde_cbor::from_slice(encoded_slice).unwrap();
 
-    println!("{:?}", data);
+    info!("{:?}", data);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -164,6 +191,18 @@ fn from_sealed_log_for_slice<'a, T: Copy + ContiguousMemory>(sealed_log: * mut u
     unsafe {
         SgxSealedData::<[T]>::from_raw_sealed_data_t(sealed_log as * mut sgx_sealed_data_t, sealed_log_size)
     }
+}
+
+fn get_length_of_data_in_scratch_pad(scratch_pad: &Bytes) -> usize {
+    let mut length_of_data_arr = [0u8; U32_NUM_BYTES];
+    let bytes = &scratch_pad[..U32_NUM_BYTES];
+    length_of_data_arr.copy_from_slice(bytes);
+    u32::from_le_bytes(length_of_data_arr) as usize
+}
+
+fn get_data_from_scratch_pad(scratch_pad: &Bytes) -> Bytes {
+    let length_of_data = get_length_of_data_in_scratch_pad(scratch_pad);
+    scratch_pad[U32_NUM_BYTES..U32_NUM_BYTES + length_of_data].to_vec()
 }
 
 //////////////////////////////////////////////////////////////////////////

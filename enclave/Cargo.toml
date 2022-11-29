@@ -21,6 +21,8 @@ sgx_tunittest = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 serde = { git = "https://github.com/mesalock-linux/serde-sgx" }
 serde_derive = { git = "https://github.com/mesalock-linux/serde-sgx" }
 serde_cbor = { git = "https://github.com/mesalock-linux/cbor-sgx" }
+log = { git = "https://github.com/mesalock-linux/log-sgx" }
+env_logger = { git = "https://github.com/mesalock-linux/env_logger-sgx" }
 
 [patch.'https://github.com/apache/teaclave-sgx-sdk.git']
 # sgx_align_struct_attribute = { path = "../../../sgx_align_struct_attribute" }

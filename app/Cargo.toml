@@ -10,6 +10,7 @@ log = "0.4.17"
 env_logger = "0.10.0"
 sgx_types = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_urts = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 
 [patch.'https://github.com/apache/teaclave-sgx-sdk.git']
 sgx_urts = { version = "1.1.6", git = "https://github.com/apache/incubator-teaclave-sgx-sdk", branch = "v1.1.6-testing" }
