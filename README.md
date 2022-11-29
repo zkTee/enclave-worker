@@ -1,5 +1,10 @@
 # enclave-worker
 
+### Run
+```shell
+./x.sh
+```
+
 Intel SGX frontier.
 
 - [x] seal-unseal
