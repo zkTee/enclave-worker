@@ -24,6 +24,7 @@ mod ocall_api;
 mod init;
 mod seal;
 mod enclave_main;
+mod say;
 
 use std::thread;
 
@@ -35,6 +36,8 @@ fn main() {
     });
 
     handler.join().unwrap();
+
+    println!("🎅 ended!");
 }
 
 #[cfg(test)]

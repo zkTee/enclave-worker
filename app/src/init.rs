@@ -43,7 +43,7 @@ pub fn init_enclave() -> SgxResult<SgxEnclave> {
                     Ok(1024) => {
                         println!("✔ [App] Token file valid!");
                     },
-                    _ => println!("✔[App] Token file invalid, will create new token file"),
+                    _ => println!("✔ [App] Token file invalid, will create new token file"),
                 }
             }
         }

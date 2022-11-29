@@ -1,6 +1,7 @@
 use sgx_types::*;
 use init;
 use seal;
+use say;
 
 pub fn main() {
     let enclave = match init::init_enclave() {
@@ -14,11 +15,13 @@ pub fn main() {
         }
     };
 
-    let result = seal::seal(&enclave);
-    match result {
+    let status = say::say_something(&enclave);
+
+    // let result = seal::seal(&enclave);
+    match status {
         sgx_status_t::SGX_SUCCESS => {}
         _ => {
-            println!("[-] ECALL Enclave Failed {}!", result.as_str());
+            println!("[-] ECALL Enclave Failed {}!", status.as_str());
             return;
         }
     }
