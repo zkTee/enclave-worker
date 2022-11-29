@@ -28,7 +28,7 @@ extern crate sgx_tseal;
 #[macro_use] extern crate sgx_tstd as std;
 extern crate sgx_rand;
 
-extern crate log;
+#[macro_use] extern crate log;
 #[macro_use] extern crate serde_derive;
 extern crate sgx_tunittest;
 
@@ -40,8 +40,6 @@ use std::slice;
 use sgx_tseal::{SgxSealedData};
 use sgx_rand::{Rng, StdRng};
 use sgx_tunittest::*;
-
-// use sgx_types::{sgx_status_t, sgx_sealed_data_t};
 use sgx_types::marker::ContiguousMemory;
 
 mod test_seal;
@@ -49,8 +47,6 @@ use test_seal::*;
 
 mod save;
 mod ocall_api;
-
-use log::*;
 
 pub type Bytes = Vec<u8>;
 pub const MEGA_BYTE: usize = 1_000_000;
@@ -69,7 +65,9 @@ impl Item {
 
 #[no_mangle]
 pub extern "C" fn say_something(some_string: *const u8, some_len: usize) -> sgx_status_t {
-
+    env_logger::init();
+    info!("✔ [Enc] Running example inside enclave!");
+    
     let str_slice = unsafe { slice::from_raw_parts(some_string, some_len) };
     let _ = io::stdout().write(str_slice);
 
@@ -93,7 +91,7 @@ pub extern "C" fn say_something(some_string: *const u8, some_len: usize) -> sgx_
                                                .as_str();
 
     // Ocall to normal world for output
-    info!("{}", &hello_string);
+    info!("###{}", &hello_string);
 
     // save to db
     let mut scratch_pad: Vec<u8> = vec![0; SCRATCH_PAD_SIZE];
@@ -201,6 +199,8 @@ fn get_length_of_data_in_scratch_pad(scratch_pad: &Bytes) -> usize {
 }
 
 fn get_data_from_scratch_pad(scratch_pad: &Bytes) -> Bytes {
+    info!("✔ [Enc] get_data_from_scratch_pad!");
+
     let length_of_data = get_length_of_data_in_scratch_pad(scratch_pad);
     scratch_pad[U32_NUM_BYTES..U32_NUM_BYTES + length_of_data].to_vec()
 }

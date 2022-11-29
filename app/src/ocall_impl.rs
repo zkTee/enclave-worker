@@ -68,6 +68,9 @@ fn get_from_db(
             final_bytes_to_copy.len()
         )
     }
+
+    info!("✔ [App] Copying data Done!");
+
     sgx_status_t::SGX_SUCCESS
 }
 

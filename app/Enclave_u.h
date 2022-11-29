@@ -7,6 +7,7 @@
 #include <string.h>
 #include "sgx_edger8r.h" /* for sgx_status_t etc. */
 
+#include "pwd.h"
 #include "time.h"
 #include "inc/stat.h"
 #include "sys/uio.h"
@@ -28,6 +29,38 @@ sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, save_to_db, (uint8_t* key_pointer, ui
 #ifndef GET_FROM_DB_DEFINED__
 #define GET_FROM_DB_DEFINED__
 sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, get_from_db, (uint8_t* key_pointer, uint32_t key_size, uint8_t* value_pointer, uint32_t value_size));
+#endif
+#ifndef U_ENVIRON_OCALL_DEFINED__
+#define U_ENVIRON_OCALL_DEFINED__
+char** SGX_UBRIDGE(SGX_NOCONVENTION, u_environ_ocall, (void));
+#endif
+#ifndef U_GETENV_OCALL_DEFINED__
+#define U_GETENV_OCALL_DEFINED__
+char* SGX_UBRIDGE(SGX_NOCONVENTION, u_getenv_ocall, (const char* name));
+#endif
+#ifndef U_SETENV_OCALL_DEFINED__
+#define U_SETENV_OCALL_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, u_setenv_ocall, (int* error, const char* name, const char* value, int overwrite));
+#endif
+#ifndef U_UNSETENV_OCALL_DEFINED__
+#define U_UNSETENV_OCALL_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, u_unsetenv_ocall, (int* error, const char* name));
+#endif
+#ifndef U_CHDIR_OCALL_DEFINED__
+#define U_CHDIR_OCALL_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, u_chdir_ocall, (int* error, const char* dir));
+#endif
+#ifndef U_GETCWD_OCALL_DEFINED__
+#define U_GETCWD_OCALL_DEFINED__
+char* SGX_UBRIDGE(SGX_NOCONVENTION, u_getcwd_ocall, (int* error, char* buf, size_t buflen));
+#endif
+#ifndef U_GETPWUID_R_OCALL_DEFINED__
+#define U_GETPWUID_R_OCALL_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, u_getpwuid_r_ocall, (unsigned int uid, struct passwd* pwd, char* buf, size_t buflen, struct passwd** passwd_result));
+#endif
+#ifndef U_GETUID_OCALL_DEFINED__
+#define U_GETUID_OCALL_DEFINED__
+unsigned int SGX_UBRIDGE(SGX_NOCONVENTION, u_getuid_ocall, (void));
 #endif
 #ifndef U_THREAD_SET_EVENT_OCALL_DEFINED__
 #define U_THREAD_SET_EVENT_OCALL_DEFINED__

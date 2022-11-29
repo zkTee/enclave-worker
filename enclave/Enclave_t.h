@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include "sgx_edger8r.h" /* for sgx_ocall etc. */
 
+#include "pwd.h"
 #include "time.h"
 #include "inc/stat.h"
 #include "sys/uio.h"
@@ -29,6 +30,14 @@ void t_global_exit_ecall(void);
 
 sgx_status_t SGX_CDECL save_to_db(sgx_status_t* retval, uint8_t* key_pointer, uint32_t key_size, uint32_t sealed_log_size, uint8_t* scratch_pad_pointer);
 sgx_status_t SGX_CDECL get_from_db(sgx_status_t* retval, uint8_t* key_pointer, uint32_t key_size, uint8_t* value_pointer, uint32_t value_size);
+sgx_status_t SGX_CDECL u_environ_ocall(char*** retval);
+sgx_status_t SGX_CDECL u_getenv_ocall(char** retval, const char* name);
+sgx_status_t SGX_CDECL u_setenv_ocall(int* retval, int* error, const char* name, const char* value, int overwrite);
+sgx_status_t SGX_CDECL u_unsetenv_ocall(int* retval, int* error, const char* name);
+sgx_status_t SGX_CDECL u_chdir_ocall(int* retval, int* error, const char* dir);
+sgx_status_t SGX_CDECL u_getcwd_ocall(char** retval, int* error, char* buf, size_t buflen);
+sgx_status_t SGX_CDECL u_getpwuid_r_ocall(int* retval, unsigned int uid, struct passwd* pwd, char* buf, size_t buflen, struct passwd** passwd_result);
+sgx_status_t SGX_CDECL u_getuid_ocall(unsigned int* retval);
 sgx_status_t SGX_CDECL u_thread_set_event_ocall(int* retval, int* error, const void* tcs);
 sgx_status_t SGX_CDECL u_thread_wait_event_ocall(int* retval, int* error, const void* tcs, const struct timespec* timeout);
 sgx_status_t SGX_CDECL u_thread_set_multiple_events_ocall(int* retval, int* error, const void** tcss, int total);

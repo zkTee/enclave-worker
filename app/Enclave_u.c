@@ -45,6 +45,55 @@ typedef struct ms_get_from_db_t {
 	uint32_t ms_value_size;
 } ms_get_from_db_t;
 
+typedef struct ms_u_environ_ocall_t {
+	char** ms_retval;
+} ms_u_environ_ocall_t;
+
+typedef struct ms_u_getenv_ocall_t {
+	char* ms_retval;
+	const char* ms_name;
+} ms_u_getenv_ocall_t;
+
+typedef struct ms_u_setenv_ocall_t {
+	int ms_retval;
+	int* ms_error;
+	const char* ms_name;
+	const char* ms_value;
+	int ms_overwrite;
+} ms_u_setenv_ocall_t;
+
+typedef struct ms_u_unsetenv_ocall_t {
+	int ms_retval;
+	int* ms_error;
+	const char* ms_name;
+} ms_u_unsetenv_ocall_t;
+
+typedef struct ms_u_chdir_ocall_t {
+	int ms_retval;
+	int* ms_error;
+	const char* ms_dir;
+} ms_u_chdir_ocall_t;
+
+typedef struct ms_u_getcwd_ocall_t {
+	char* ms_retval;
+	int* ms_error;
+	char* ms_buf;
+	size_t ms_buflen;
+} ms_u_getcwd_ocall_t;
+
+typedef struct ms_u_getpwuid_r_ocall_t {
+	int ms_retval;
+	unsigned int ms_uid;
+	struct passwd* ms_pwd;
+	char* ms_buf;
+	size_t ms_buflen;
+	struct passwd** ms_passwd_result;
+} ms_u_getpwuid_r_ocall_t;
+
+typedef struct ms_u_getuid_ocall_t {
+	unsigned int ms_retval;
+} ms_u_getuid_ocall_t;
+
 typedef struct ms_u_thread_set_event_ocall_t {
 	int ms_retval;
 	int* ms_error;
@@ -515,6 +564,70 @@ static sgx_status_t SGX_CDECL Enclave_get_from_db(void* pms)
 {
 	ms_get_from_db_t* ms = SGX_CAST(ms_get_from_db_t*, pms);
 	ms->ms_retval = get_from_db(ms->ms_key_pointer, ms->ms_key_size, ms->ms_value_pointer, ms->ms_value_size);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_environ_ocall(void* pms)
+{
+	ms_u_environ_ocall_t* ms = SGX_CAST(ms_u_environ_ocall_t*, pms);
+	ms->ms_retval = u_environ_ocall();
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_getenv_ocall(void* pms)
+{
+	ms_u_getenv_ocall_t* ms = SGX_CAST(ms_u_getenv_ocall_t*, pms);
+	ms->ms_retval = u_getenv_ocall(ms->ms_name);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_setenv_ocall(void* pms)
+{
+	ms_u_setenv_ocall_t* ms = SGX_CAST(ms_u_setenv_ocall_t*, pms);
+	ms->ms_retval = u_setenv_ocall(ms->ms_error, ms->ms_name, ms->ms_value, ms->ms_overwrite);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_unsetenv_ocall(void* pms)
+{
+	ms_u_unsetenv_ocall_t* ms = SGX_CAST(ms_u_unsetenv_ocall_t*, pms);
+	ms->ms_retval = u_unsetenv_ocall(ms->ms_error, ms->ms_name);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_chdir_ocall(void* pms)
+{
+	ms_u_chdir_ocall_t* ms = SGX_CAST(ms_u_chdir_ocall_t*, pms);
+	ms->ms_retval = u_chdir_ocall(ms->ms_error, ms->ms_dir);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_getcwd_ocall(void* pms)
+{
+	ms_u_getcwd_ocall_t* ms = SGX_CAST(ms_u_getcwd_ocall_t*, pms);
+	ms->ms_retval = u_getcwd_ocall(ms->ms_error, ms->ms_buf, ms->ms_buflen);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_getpwuid_r_ocall(void* pms)
+{
+	ms_u_getpwuid_r_ocall_t* ms = SGX_CAST(ms_u_getpwuid_r_ocall_t*, pms);
+	ms->ms_retval = u_getpwuid_r_ocall(ms->ms_uid, ms->ms_pwd, ms->ms_buf, ms->ms_buflen, ms->ms_passwd_result);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL Enclave_u_getuid_ocall(void* pms)
+{
+	ms_u_getuid_ocall_t* ms = SGX_CAST(ms_u_getuid_ocall_t*, pms);
+	ms->ms_retval = u_getuid_ocall();
 
 	return SGX_SUCCESS;
 }
@@ -1033,12 +1146,20 @@ static sgx_status_t SGX_CDECL Enclave_sgx_thread_set_multiple_untrusted_events_o
 
 static const struct {
 	size_t nr_ocall;
-	void * table[66];
+	void * table[74];
 } ocall_table_Enclave = {
-	66,
+	74,
 	{
 		(void*)Enclave_save_to_db,
 		(void*)Enclave_get_from_db,
+		(void*)Enclave_u_environ_ocall,
+		(void*)Enclave_u_getenv_ocall,
+		(void*)Enclave_u_setenv_ocall,
+		(void*)Enclave_u_unsetenv_ocall,
+		(void*)Enclave_u_chdir_ocall,
+		(void*)Enclave_u_getcwd_ocall,
+		(void*)Enclave_u_getpwuid_r_ocall,
+		(void*)Enclave_u_getuid_ocall,
 		(void*)Enclave_u_thread_set_event_ocall,
 		(void*)Enclave_u_thread_wait_event_ocall,
 		(void*)Enclave_u_thread_set_multiple_events_ocall,

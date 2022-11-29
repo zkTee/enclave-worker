@@ -1,4 +1,4 @@
 make
 cd bin
-RUST_LOG=info ./app
+RUST_LOG=trace ./app
 cd ..

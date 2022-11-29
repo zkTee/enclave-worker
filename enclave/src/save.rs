@@ -94,7 +94,7 @@ pub fn fetch(
     info!("✔ [Enc] Getting item from external db...");
     let key_pointer: *mut u8 = &mut key[0];
     let enclave_scratch_pad_pointer: *mut u8 = &mut scratch_pad[0];
-    unsafe {
+    let status = unsafe {
         get_from_db(
             &mut sgx_status_t::SGX_SUCCESS,
             key_pointer,
@@ -103,10 +103,12 @@ pub fn fetch(
             SCRATCH_PAD_SIZE as *const u32,
         )
     };
-    
+    println!("✔ [Enc] get from db status: {:?}", status);
+
     let mut data = get_data_from_scratch_pad(&scratch_pad);
     info!("✔ [Enc] External data written to enclave's scratch pad!");
     trace!("✔ [Enc] Retreived data length: {:?}", data.len());
+
     let data_pointer: *mut u8 = &mut data[0];
     let maybe_sealed_data = from_sealed_log_for_slice::<u8>(
         data_pointer,
