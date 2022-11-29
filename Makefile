@@ -24,7 +24,7 @@ SGX_ARCH ?= x64
 
 # recursive (use =) - only looks for the variables when the command is used, not when it's defined.
 # simply expanded (use :=) - like normal imperative programming -- only those defined so far get expanded
-TOP_DIR := ./enclave-builder
+TOP_DIR := ./rust-sgx-sdk
 
 # The include directive tells make to read one or more other makefiles.  
 include $(TOP_DIR)/buildenv.mk
