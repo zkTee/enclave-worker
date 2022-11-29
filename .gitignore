@@ -7,3 +7,8 @@ bin
 lib
 *.so
 *.o
+
+enclave/Enclave_t.h
+enclave/Enclave_t.c
+app/Enclave_u.h
+app/Enclave_u.c
